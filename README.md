@@ -204,4 +204,4 @@ Branch naming conventions:
 
 ## Author
 
-**Anrio Carver** - QUT student ID `n11473215` — IFQ636 Software Lifecycle Management, Semester 1 2026.
+**Anrio Carver** - QUT student ID `n11473215` - IFQ636 Software Lifecycle Management, Semester 1 2026.
