@@ -9,8 +9,8 @@ import axios from 'axios';
 const STORAGE_KEY = 'mesa.auth';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5001', // local development
-  // baseURL: 'http://YOUR_EC2_PUBLIC_IP:5001', // live (EC2) — set your public IP, then push to main
+  // baseURL: 'http://localhost:5001', // local development
+  baseURL: 'http://13.239.132.26:5001', // live (EC2)
   headers: { 'Content-Type': 'application/json' },
 });
 
