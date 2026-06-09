@@ -1,14 +1,17 @@
-// Axios instance with the API base URL pre-configured and a request interceptor
-// that automatically attaches the bearer token from localStorage to every request.
-// This means individual page components can call `axiosInstance.post(...)` without
-// having to remember to add the Authorization header.
-
 import axios from 'axios';
+
+// Single axios instance for the whole app.
+// baseURL points at the backend API. Keep localhost for local dev; before
+// deploying to EC2, comment it and uncomment the "live" line with your
+// instance's Public IPv4 (SOP Step 47).
+// The request interceptor attaches the JWT from localStorage to every request.
 
 const STORAGE_KEY = 'mesa.auth';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '',
+  baseURL: 'http://localhost:5001', // local development
+  // baseURL: 'http://YOUR_EC2_PUBLIC_IP:5001', // live (EC2) — set your public IP, then push to main
+  headers: { 'Content-Type': 'application/json' },
 });
 
 axiosInstance.interceptors.request.use(
@@ -22,7 +25,7 @@ axiosInstance.interceptors.request.use(
         }
       }
     } catch (e) {
-      // Ignore - request will go unauthenticated and backend will 401 if it needs auth.
+      // Ignore — request goes unauthenticated and the backend will 401 if it needs auth.
     }
     return config;
   },
