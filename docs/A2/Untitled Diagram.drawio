@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="4VYVwwqch_8uv3UDrX3S-1" parent="1" style="text;html=1;align=center;fontSize=18;fontStyle=1;fontColor=#1F1A12;" value="Restaurant Review Platform — System Architecture (A2)" vertex="1">
+        <mxCell id="4VYVwwqch_8uv3UDrX3S-1" parent="1" style="text;html=1;align=center;fontSize=18;fontStyle=1;fontColor=#1F1A12;" value="Restaurant Review Platform - System Architecture (A2)" vertex="1">
           <mxGeometry height="30" width="600" x="350" y="180" as="geometry" />
         </mxCell>
         <mxCell id="4VYVwwqch_8uv3UDrX3S-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBF7EE;strokeColor=#D9CFB8;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontSize=12;fontStyle=1;fontColor=#6B5D49;" value="Express API (backend)" vertex="1">
