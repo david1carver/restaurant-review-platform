@@ -9,68 +9,43 @@ jobs:
   test:
     name: Run Tests
     runs-on: self-hosted
-    strategy:
-      matrix:
-        node-version: [22]
     environment: MONGO_URI
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22
 
-      - name: Print Env Secret
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          PORT: ${{ secrets.PORT }}
-        run: |
-          echo "Secret 1 is: $MONGO_URI"
-          echo "Secret 2 is: $JWT_SECRET"
-          echo "Secret 3 is: $PORT"
+      - name: Create production .env in backend
+        run: echo "${{ secrets.PROD }}" > backend/.env
 
-      - name: Stop running services (pm2)
-        run: pm2 stop all || true
-
-      - name: Install Backend Dependencies
+      - name: Install backend dependencies
         working-directory: ./backend
-        run: |
-          npm install --global yarn
-          yarn --version
-          yarn install
+        run: npm ci || npm install
 
-      - name: Install Frontend Dependencies and Build
+      - name: Run backend unit tests
+        working-directory: ./backend
+        run: npm test
+
+      - name: Install frontend dependencies and build
         working-directory: ./frontend
         env:
           CI: 'false'
         run: |
-          df -h
-          sudo rm -rf ./build
-          yarn install
-          yarn run build
+          npm ci || npm install
+          rm -rf build
+          npm run build
 
-      - name: Run Backend Tests
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          PORT: ${{ secrets.PORT }}
-        working-directory: ./backend
-        run: npm test
-
-      - name: Install root dependencies
-        run: npm ci
-
-      - name: Create production .env in backend
+      # pm2 runs ONLY after a green build + test, and never "stop all",
+      # so a failed run can never take the live site down.
+      - name: Restart services with pm2
         run: |
-          cd ./backend
-          touch .env
-          echo "${{ secrets.PROD }}" > .env
-
-      - name: Start and restart services (pm2)
-        run: |
-          pm2 start all || true
-          pm2 restart all || true
-          pm2 save || true
+          export PATH="$PATH:$(npm config get prefix)/bin:/usr/local/bin:/usr/bin"
+          for d in "$HOME"/.nvm/versions/node/*/bin; do export PATH="$PATH:$d"; done
+          command -v pm2 >/dev/null 2>&1 || npm install -g pm2
+          pm2 restart backend  --update-env || pm2 start npm --name backend --cwd "$GITHUB_WORKSPACE/backend" -- start
+          pm2 restart Frontend              || pm2 serve "$GITHUB_WORKSPACE/frontend/build" 3000 --name Frontend --spa
+          pm2 save
